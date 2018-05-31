@@ -26,14 +26,14 @@ def gotoAngle(channel,angle):
         else:
             pass
     elif (channel == 1):
-    # Servo 1 motion limited to +/- 45 deg due to excess loading at 
-    # larger angles
-        if int(angle) <= -45.0:
-            angle = -45.0    
-            print "Angle truncated at -45 deg"        
-        elif int(angle) >= 45.0:
-            angle = 45.0
-            print "Angle truncated at + 45 deg"
+    # Servo 1 motion limited between 45 - 135 deg due to excess loading at 
+    # larger angles, not enough motor torque at channel 1
+        if int(angle) <=  45.0:
+            angle =  45.0    
+            print "Angle truncated at 45 deg"        
+        elif int(angle) >= 135.0:
+            angle = 135.0
+            print "Angle truncated at  135 deg"
         else:
             pass
     else:
@@ -49,7 +49,7 @@ def gotoAngle(channel,angle):
         else:
             servoPulse = 375 - angle*260/90
     elif (channel == 1):
-        servoPulse = 380 + angle*220/90
+        servoPulse = 160 + angle*220/90
     elif (channel == 2):
         # Different trims due to non-uniform 
         # behaviour in +/- direction for this 
@@ -92,7 +92,7 @@ while(1):
             print "This 'angle' is not a real number. Please re-enter the motor choice and angle"
     elif (channel == 1):
         try:
-            angle = float(raw_input("Please enter the angle between -45 and 45 deg "))
+            angle = float(raw_input("Please enter the angle between 45 and 135 deg "))
             runMotor = True
         except:
             print "This 'angle' is not a real number. Please re-enter the motor chioce and angle"
