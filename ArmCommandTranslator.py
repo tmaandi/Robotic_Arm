@@ -9,6 +9,10 @@ pwm = Adafruit_PWM_Servo_Driver.PWM(0x40)
 pwm.setPWMFreq(60)
 # Command angle in degrees to servos
 
+# Limit function
+def limit(n, minn, maxn):
+    return max(min(maxn, n), minn)
+
 def gotoAngle(channel,angle):
     """
     This function translates the 'angle of rotation' requests to 
@@ -75,30 +79,30 @@ def gotoAngle(channel,angle):
 #########################
 #### Test Code/Manual Run ####
 #########################
-
-pwm.setPWM(0,0,375)
-pwm.setPWM(1,0,380)
-pwm.setPWM(2,0,405)
-pwm.setPWM(3,0,395)
-runMotor = False
  
-while(1):
-    channel = int(raw_input("Please enter the motor #: (0 or 1 or 2 or 3) "))
-    if ((channel == 0) or (channel == 2) or (channel == 3)):
-        try:
-            angle = float(raw_input("Please enter the angle between -90 and 90 deg "))
-            runMotor = True
-        except:
-            print "This 'angle' is not a real number. Please re-enter the motor choice and angle"
-    elif (channel == 1):
-        try:
-            angle = float(raw_input("Please enter the angle between 45 and 135 deg "))
-            runMotor = True
-        except:
-            print "This 'angle' is not a real number. Please re-enter the motor chioce and angle"
-    else:
-        print "Incorrect motor choice"
-        runMotor = False
-    if (runMotor == True):
-        gotoAngle(channel, angle)
-        
+if __name__ == "__main__":
+    pwm.setPWM(0,0,375)
+    pwm.setPWM(1,0,380)
+    pwm.setPWM(2,0,405)
+    pwm.setPWM(3,0,395)
+    runMotor = False
+    while(1):
+        channel = int(raw_input("Please enter the motor #: (0 or 1 or 2 or 3) "))
+        if ((channel == 0) or (channel == 2) or (channel == 3)):
+            try:
+                angle = float(raw_input("Please enter the angle between -90 and 90 deg "))
+                runMotor = True
+            except:
+                print "This 'angle' is not a real number. Please re-enter the motor choice and angle"
+        elif (channel == 1):
+            try:
+                angle = float(raw_input("Please enter the angle between 45 and 135 deg "))
+                runMotor = True
+            except:
+                print "This 'angle' is not a real number. Please re-enter the motor chioce and angle"
+        else:
+            print "Incorrect motor choice"
+            runMotor = False
+        if (runMotor == True):
+            gotoAngle(channel, angle)
+            
