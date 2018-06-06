@@ -1,5 +1,7 @@
-from ArmKinematics import effectiveDhMatrix
+from ArmKinematics import effectiveDhMatrix,  inverseKinPos
 from ArmCommandTranslator import gotoAngle, limit
+
+import numpy as np
 
 if __name__ == "__main__":
     
@@ -43,7 +45,24 @@ if __name__ == "__main__":
             motor_index = motor_index + 1
         
         T = effectiveDhMatrix(joint_angles[0], joint_angles[1], joint_angles[2], joint_angles[3])
-        print("\nThe coordinates of the end effector's origin are:")
+        print("\nThe coordinates of the end effector's tip are:")
         print("X: " + str(T[0,3]) + "  Y: " + str(T[1,3]) + "  Z: " + str(T[2,3]) + "\n")
+
+        # Tip of end effector
+        p_tip = T[:,3]
+        
+        # For base of end effector
+        a = np.array([120,0,0,0])
+        p_base = p_tip - T.dot(a.transpose())
+        
+        x = float(p_base[0])
+        y = float(p_base[1])
+        z = float(p_base[2])
+        
+        #print(x.dtype)
+        print(x,y,z)
+
+        print(p_base)
+        print(inverseKinPos(x, y, z))
 
 

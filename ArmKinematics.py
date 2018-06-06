@@ -1,5 +1,5 @@
 import numpy as np
-from math import cos, sin, pi
+from math import cos, sin, pi, atan2, sqrt
 
 def dhMatrix( linkLength, linkTwist, linkOffset, jointAngle):
     """ This function calculates the Denavit-Hartenberg transformation
@@ -41,6 +41,46 @@ def effectiveDhMatrix(jointAngle0, jointAngle1, jointAngle2, jointAngle3):
 
     return T
  
+###################### Inverse Kinematics ##########################
+#### Solving for the first three angles to achieve the end effector origin position  #####
+##############################################################
+
+def inverseKinPos(x, y, z):
+    """ This function solves for the requisite "theta" for 
+         the first three motors to achieve a desired position
+         in space for the end effector's origin """
+        
+    d1 = motor1height    # mm
+    a = linkLength # mm
+
+    theta1 = atan2(y,x)
+    
+    if (theta1 > pi/2):
+        theta1 = theta1 - pi
+    elif (theta1 < -pi/2):
+        theta1 = theta1 + pi
+    else:
+        pass
+
+    r = sqrt(x**2 + y**2)
+    if((np.sign(x) == -1) or (np.sign(y)*np.sign(theta1) == -1)):
+        r = -r
+
+    s = z - d1
+    
+    D = (r**2 + s**2 - 2*(a**2))/(2*(a**2))
+
+    theta3 = atan2(sqrt(1 - D**2),D) # actually +/- both which leads to two different theta2 values, both sets lead to same end effector position
+
+    theta2 = atan2(s,r) - atan2(a*sin(theta3),a*(1 + cos(theta3)))
+    print("theta2 = " + str(atan2(s,r)*180/pi) + " - " + str(atan2(a*sin(theta3),a*(1 + cos(theta3)))*180/pi))
+
+
+    
+
+    return [theta1*180/pi, theta2*180/pi, theta3*180/pi]
+    
+
 
 
 
