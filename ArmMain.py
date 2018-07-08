@@ -59,10 +59,9 @@ if __name__ == "__main__":
         y = float(p_base[1])
         z = float(p_base[2])
         
-        #print(x.dtype)
-        print(x,y,z)
-
+        print("\nThe coordinates of the end effector's base are:")
         print(p_base)
+        print("\nThe angles calculated by inverse kinematics for this end-effector base position are: ")
         print(inverseKinPos(x, y, z))
 
 
