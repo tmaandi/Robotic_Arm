@@ -30,7 +30,7 @@ def effectiveDhMatrix(jointAngle0, jointAngle1, jointAngle2, jointAngle3):
          matrix, representing transformation from end effector frame to 
          base frame """
 
-    A0 = dhMatrix(        0        , 90.0, motor1height, jointAngle0)
+    A0 = dhMatrix(       0.0,  90.0,          motor1height, jointAngle0)
     A1 = dhMatrix(linkLength,   0.0,                   0.0, jointAngle1)
     A2 = dhMatrix(linkLength,   0.0,                   0.0, jointAngle2)
     A3 = dhMatrix(linkLength,   0.0,                   0.0, jointAngle3)
@@ -50,10 +50,10 @@ def inverseKinPos(x, y, z):
          the first three motors to achieve a desired position
          in space for the end effector's origin """
         
-    d1 = motor1height    # mm
+    d2 = motor2height    # mm
     a = linkLength # mm
 
-    # Calculating theta1 (Motor # 0)
+    # Calculating theta1 (Motor_1)
     theta1 = atan2(y,x)
     
     if (theta1 > pi/2):
@@ -63,10 +63,10 @@ def inverseKinPos(x, y, z):
     else:
         pass
 
-    # Calculating theta3 (Motor # 2)
+    # Calculating theta3 (Motor_3)
     r = sqrt(x**2 + y**2)
 
-    s = z - d1
+    s = z - d2
     
     D = (r**2 + s**2 - 2*(a**2))/(2*(a**2))  # Cos(theta3) = D, using cosine rule
 
@@ -74,7 +74,7 @@ def inverseKinPos(x, y, z):
     # actually theta3  can be +/- both which leads to two different theta2 values, 
     # both sets lead to same end effector position, we'll stick to + only for now
 
-    # Calculating theta2 (Motor # 1)
+    # Calculating theta2 (Motor_2)
 
    # if the end effector origin's projection is in 2nd or 3rd quadrant
     if((np.sign(x) == -1) or (np.sign(y)*np.sign(theta1) == -1)):

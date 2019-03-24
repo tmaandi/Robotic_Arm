@@ -2,23 +2,26 @@ from ArmKinematics import effectiveDhMatrix,  inverseKinPos
 from ArmCommandTranslator import gotoAngle, limit
 
 import numpy as np
+from ArmConstants import *
 
 if __name__ == "__main__":
     
     # Initial Arm Position    
-    gotoAngle(0, 0)
-    gotoAngle(1, 90)
-    gotoAngle(2, 0)
-    gotoAngle(3, 0)
+    gotoAngle(MOTOR_1, 0)
+    gotoAngle(MOTOR_2, 90)
+    gotoAngle(MOTOR_3, 0)
+    gotoAngle(MOTOR_4, 0)
+    
+    motors = MOTOR_LAYOUT.keys()
 
     while(1):
         run_prog = True
         joint_angles = [ ]
-        for index in range(4):
+        for index in range(0,4):
             if (run_prog == True):
                 if (index == 1):
                     try:
-                        jointAngle = float(raw_input("Please enter the rotation angle [ 45.0, 135.0] deg for motor # " + str(index) + " : "))
+                        jointAngle = float(raw_input("Please enter the rotation angle [ 45.0, 135.0] deg for motor # " + str(motors[index]) + " : "))
                         jointAngle = limit(jointAngle,  45.0, 135.0)
                         joint_angles.append(jointAngle)
                     except:
@@ -27,7 +30,7 @@ if __name__ == "__main__":
                         break
                 else:
                     try:
-                        jointAngle = float(raw_input("Please enter the rotation angle [ -90.0, 90.0] deg for motor # " + str(index) + " : "))
+                        jointAngle = float(raw_input("Please enter the rotation angle [ -90.0, 90.0] deg for motor # " + str(motors[index]) + " : "))
                         jointAngle = limit(jointAngle,  -90.0, 90.0)
                         joint_angles.append(jointAngle)
                     except:
@@ -41,7 +44,7 @@ if __name__ == "__main__":
         motor_index = 0
 
         for angle in joint_angles:
-            gotoAngle(motor_index, angle)
+            gotoAngle(motors[motor_index], angle)
             motor_index = motor_index + 1
         
         T = effectiveDhMatrix(joint_angles[0], joint_angles[1], joint_angles[2], joint_angles[3])

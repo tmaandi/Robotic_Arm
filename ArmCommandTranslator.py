@@ -2,6 +2,8 @@
 
 from Adafruit_PWM_Servo_Driver import Adafruit_PWM_Servo_Driver
 import time
+
+from ArmConstants import *
 # Initialise the PWM device using the default address
 
 pwm = Adafruit_PWM_Servo_Driver.PWM(0x40)
@@ -13,7 +15,7 @@ pwm.setPWMFreq(60)
 def limit(n, minn, maxn):
     return max(min(maxn, n), minn)
 
-def gotoAngle(channel,angle):
+def gotoAngle(motor,angle):
     """
     This function translates the 'angle of rotation' requests to 
     the servos into PWM pulse while keeping in mind two things:
@@ -22,14 +24,14 @@ def gotoAngle(channel,angle):
      
     """
     # Limiting the angle requests as per the motor range constraints
-    if((channel == 0) or (channel == 2) or (channel == 3)):
+    if((motor == MOTOR_1) or (motor == MOTOR_3) or (motor == MOTOR_4)):
         if int(angle) >= 90.0:
             angle =  90.0
         elif int(angle) <= -90.0:
             angle = -90.0
         else:
             pass
-    elif (channel == 1):
+    elif (motor == MOTOR_2):
     # Servo 1 motion limited between 45 - 135 deg due to excess loading at 
     # larger angles, not enough motor torque at channel 1
         if int(angle) <=  45.0:
@@ -44,7 +46,7 @@ def gotoAngle(channel,angle):
         pass
 
     # Translating angle into PWM command
-    if (channel == 0):
+    if (motor == MOTOR_1):
         # Different trims due to non-uniform 
         # behaviour in +/- direction for this 
         # motor
@@ -52,9 +54,9 @@ def gotoAngle(channel,angle):
             servoPulse = 375 - angle*230/90
         else:
             servoPulse = 375 - angle*260/90
-    elif (channel == 1):
+    elif (motor == MOTOR_2):
         servoPulse = 160 + angle*220/90
-    elif (channel == 2):
+    elif (motor == MOTOR_3):
         # Different trims due to non-uniform 
         # behaviour in +/- direction for this 
         # motor
@@ -62,7 +64,7 @@ def gotoAngle(channel,angle):
             servoPulse = 405 + angle*255/90
         else:
             servoPulse = 405 + angle*234/90
-    elif (channel == 3):
+    elif (motor == MOTOR_4):
         # Different trims due to non-uniform 
         # behaviour in +/- direction for this 
         # motor
@@ -72,8 +74,8 @@ def gotoAngle(channel,angle):
             servoPulse = 395 + angle*235/90
     else:
         print "Invalid Motor Choice"
-    servoPulse = int(servoPulse)        
-    pwm.setPWM(channel,0,servoPulse)
+    servoPulse = int(servoPulse)
+    pwm.setPWM(MOTOR_LAYOUT[motor],0,servoPulse)
 
 
 #########################
@@ -81,13 +83,15 @@ def gotoAngle(channel,angle):
 #########################
  
 if __name__ == "__main__":
-    pwm.setPWM(0,0,375)
-    pwm.setPWM(1,0,380)
-    pwm.setPWM(2,0,405)
-    pwm.setPWM(3,0,395)
+    pwm.setPWM(MOTOR_LAYOUT[MOTOR_1],0,375)
+    pwm.setPWM(MOTOR_LAYOUT[MOTOR_2],0,380)
+    pwm.setPWM(MOTOR_LAYOUT[MOTOR_3],0,405)
+    pwm.setPWM(MOTOR_LAYOUT[MOTOR_4],0,395)
     runMotor = False
+    
     while(1):
-        channel = int(raw_input("Please enter the motor #: (0 or 1 or 2 or 3) "))
+        motor_num = int(raw_input("Please enter the motor #: (1 or 2 or 3 or 4) "))
+        channel = MOTOR_LAYOUT[motor_num]
         if ((channel == 0) or (channel == 2) or (channel == 3)):
             try:
                 angle = float(raw_input("Please enter the angle between -90 and 90 deg "))
