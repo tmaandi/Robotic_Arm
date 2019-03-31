@@ -77,9 +77,7 @@ def inverseKinPos(x, y, z):
         r = -r
 
     theta1 = atan2(s,r) - atan2(a*sin(theta2),a*(1 + cos(theta2)))
-    print("theta1 = " + str(atan2(s,r)*180/pi) + " - " + str(atan2(a*sin(theta2),a*(1 + cos(theta2)))*180/pi))
-
-
+  
     return [theta0*180/pi, theta1*180/pi, theta2*180/pi]
     
 
