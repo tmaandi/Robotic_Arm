@@ -24,29 +24,11 @@ def gotoAngle(motor,angle):
      
     """
     # Limiting the angle requests as per the motor range constraints
-    if((motor == MOTOR_0) or (motor == MOTOR_2) or (motor == MOTOR_3)):
-        if int(angle) > MOTOR_BOUNDS['UPPER_BOUND'][motor]:
-            angle =  90.0
-            print("Angle truncated to +90 deg limit")
-        elif int(angle) < -90.0:
-            angle = -90.0
-            print("Angle truncated to -90 deg limit")
-        else:
-            pass
-    elif (motor == MOTOR_1):
     # Servo 1 motion limited between 45 - 135 deg due to excess loading at 
     # larger angles, not enough motor torque at channel 1
-        if int(angle) <  45.0:
-            angle =  45.0    
-            print("Angle truncated to +45 deg limit")       
-        elif int(angle) > 135.0:
-            angle = 135.0
-            print("Angle truncated to +135 deg limit")
-        else:
-            pass
-    else:
-        pass
 
+    angle = limit(angle,MOTOR_BOUNDS['LOWER_BOUND'][motor],MOTOR_BOUNDS['UPPER_BOUND'][motor])
+    
     # Translating angle into PWM command
     if (motor == MOTOR_0):
         # Different trims due to non-uniform 
@@ -76,13 +58,14 @@ def gotoAngle(motor,angle):
             servoPulse = 395 + angle*235/90
     else:
         print("Invalid Motor Choice")
+        
     servoPulse = int(servoPulse)
     pwm.setPWM(MOTOR_LAYOUT[motor],0,servoPulse)
 
 
-#########################
+##############################
 #### Test Code/Manual Run ####
-#########################
+##############################
  
 if __name__ == "__main__":
     pwm.setPWM(MOTOR_LAYOUT[MOTOR_0],0,375)

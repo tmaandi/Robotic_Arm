@@ -17,27 +17,17 @@ if __name__ == "__main__":
     while(1):
         run_prog = True
         joint_angles = [ ]
-        for index in range(0,4):
+        for index in range(len(motors)):
             if (run_prog == True):
-                if (index == 1):
-                    try:
-                        jointAngle = float(raw_input("Please enter the rotation angle [ 45.0, 135.0] deg for motor # " + str(motors[index]) + " : "))
-                        jointAngle = limit(jointAngle,  45.0, 135.0)
-                        joint_angles.append(jointAngle)
-                    except:
-                        print("This 'angle' is not a real number. Please re-enter the motor choice and angle")
-                        run_prog = False                        
-                        break
-                else:
-                    try:
-                        jointAngle = float(raw_input("Please enter the rotation angle [ -90.0, 90.0] deg for motor # " + str(motors[index]) + " : "))
-                        jointAngle = limit(jointAngle,  -90.0, 90.0)
-                        joint_angles.append(jointAngle)
-                    except:
-                        print("This 'angle' is not a real number. Please re-enter the motor choice and angle")
-                        run_prog = False                        
-                        break                      
-    
+                try:
+                    jointAngle = float(raw_input("Please enter the rotation angle [{}, {}] deg for motor # ".format(MOTOR_BOUNDS['LOWER_BOUND'][index],MOTOR_BOUNDS['UPPER_BOUND'][index]) + str(motors[index]) + " : "))
+                    jointAngle = limit(jointAngle,MOTOR_BOUNDS['LOWER_BOUND'][index],MOTOR_BOUNDS['UPPER_BOUND'][index])
+                    joint_angles.append(jointAngle)
+                except:
+                    print("This 'angle' is not a real number. Please re-enter the motor choice and angle")
+                    run_prog = False                        
+                    break
+                    
         if (run_prog == False):
             continue              
         
@@ -55,7 +45,7 @@ if __name__ == "__main__":
         p_tip = T[:,3]
         
         # For base of end effector
-        a = np.array([120,0,0,0])
+        a = np.array([linkLength,0,0,0])
         p_base = p_tip - T.dot(a.transpose())
         
         x = float(p_base[0])
