@@ -7,10 +7,10 @@ from ArmConstants import *
 if __name__ == "__main__":
     
     # Initial Arm Position    
-    gotoAngle(MOTOR_1, 0)
-    gotoAngle(MOTOR_2, 90)
+    gotoAngle(MOTOR_0, 0)
+    gotoAngle(MOTOR_1, 90)
+    gotoAngle(MOTOR_2, 0)
     gotoAngle(MOTOR_3, 0)
-    gotoAngle(MOTOR_4, 0)
     
     motors = MOTOR_LAYOUT.keys()
 
@@ -25,7 +25,7 @@ if __name__ == "__main__":
                         jointAngle = limit(jointAngle,  45.0, 135.0)
                         joint_angles.append(jointAngle)
                     except:
-                        print "This 'angle' is not a real number. Please re-enter the motor choice and angle"
+                        print("This 'angle' is not a real number. Please re-enter the motor choice and angle")
                         run_prog = False                        
                         break
                 else:
@@ -34,7 +34,7 @@ if __name__ == "__main__":
                         jointAngle = limit(jointAngle,  -90.0, 90.0)
                         joint_angles.append(jointAngle)
                     except:
-                        print "This 'angle' is not a real number. Please re-enter the motor choice and angle"
+                        print("This 'angle' is not a real number. Please re-enter the motor choice and angle")
                         run_prog = False                        
                         break                      
     
