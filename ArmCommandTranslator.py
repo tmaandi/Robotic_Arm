@@ -75,10 +75,10 @@ if __name__ == "__main__":
     runMotor = False
     
     while(1):
-        motor_num = int(raw_input("Please enter the motor #: (0 or 1 or 2 or 3) "))
-        if (motor_num in MOTOR_LAYOUT.keys()):
+        motor_num = int(input("Please enter the motor #: (0 or 1 or 2 or 3) "))
+        if (motor_num in list(MOTOR_LAYOUT.keys())):
             try:
-                angle = float(raw_input("Please enter the angle between {} and {} deg ".format(MOTOR_BOUNDS['LOWER_BOUND'][motor_num],MOTOR_BOUNDS['UPPER_BOUND'][motor_num])))
+                angle = float(input("Please enter the angle between {} and {} deg ".format(MOTOR_BOUNDS['LOWER_BOUND'][motor_num],MOTOR_BOUNDS['UPPER_BOUND'][motor_num])))
                 runMotor = True
             except:
                 print("This 'angle' is not a real number. Please re-enter the motor choice and angle")

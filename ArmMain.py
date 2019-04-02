@@ -12,7 +12,7 @@ if __name__ == "__main__":
     gotoAngle(MOTOR_2, 0)
     gotoAngle(MOTOR_3, 0)
     
-    motors = MOTOR_LAYOUT.keys()
+    motors = list(MOTOR_LAYOUT.keys())
 
     while(1):
         run_prog = True
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         for index in range(len(motors)):
             if (run_prog == True):
                 try:
-                    jointAngle = float(raw_input("Please enter the rotation angle [{}, {}] deg for motor # ".format(MOTOR_BOUNDS['LOWER_BOUND'][index],MOTOR_BOUNDS['UPPER_BOUND'][index]) + str(motors[index]) + " : "))
+                    jointAngle = float(input("Please enter the rotation angle [{}, {}] deg for motor # ".format(MOTOR_BOUNDS['LOWER_BOUND'][index],MOTOR_BOUNDS['UPPER_BOUND'][index]) + str(motors[index]) + " : "))
                     jointAngle = limit(jointAngle,MOTOR_BOUNDS['LOWER_BOUND'][index],MOTOR_BOUNDS['UPPER_BOUND'][index])
                     joint_angles.append(jointAngle)
                 except:
@@ -39,7 +39,7 @@ if __name__ == "__main__":
         
         T = effectiveDhMatrix(joint_angles[0], joint_angles[1], joint_angles[2], joint_angles[3])
         print("\nThe coordinates of the end effector's tip are:")
-        print("X: " + str(T[0,3]) + "  Y: " + str(T[1,3]) + "  Z: " + str(T[2,3]) + "\n")
+        print(("X: " + str(T[0,3]) + "  Y: " + str(T[1,3]) + "  Z: " + str(T[2,3]) + "\n"))
 
         # Tip of end effector
         p_tip = T[:,3]
@@ -55,6 +55,6 @@ if __name__ == "__main__":
         print("\nThe coordinates of the end effector's base are:")
         print(p_base)
         print("\nThe angles calculated by inverse kinematics for this end-effector base position are: ")
-        print(inverseKinPos(x, y, z))
+        print((inverseKinPos(x, y, z)))
 
 
