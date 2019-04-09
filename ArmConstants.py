@@ -3,6 +3,7 @@ MOTOR_0 = 0
 MOTOR_1 = 1
 MOTOR_2 = 2
 MOTOR_3 = 3
+MOTOR_NUM = 4
 
 # Define motor channels
 MOTOR_LAYOUT = {MOTOR_0: 0, MOTOR_1: 1, MOTOR_2: 2, MOTOR_3: 4}
