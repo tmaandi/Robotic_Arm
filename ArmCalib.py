@@ -3,20 +3,16 @@ from ArmPosFeedback import feedback_channels
 from ArmConstants import *
 import time
 
-CALIB_TOLERANCE = 0.01
+CALIB_TOLERANCE = 0.02
 
 class ArmCalib():
         
     def __init__(self,channels):
         
-        self.angle_bounds = [[0,0]]*MOTOR_NUM
+        self.angle_bounds = [[0,0] for i in range(MOTOR_NUM)]
         self.current_motor = MOTOR_0
         self.channels = channels
-        
-    def record_position(self, channel):
-        
-        return self.channels[channel].value
-    
+            
     def calibration_routine(self):
         
         Calib_Phase_MIN = 0
@@ -37,13 +33,12 @@ class ArmCalib():
                     if (abs(raw_feedback - previous_raw_feedback) <= (CALIB_TOLERANCE*previous_raw_feedback)):
                         time_end = time.time()
                         if ((time_end - time_start) >= 2.0):
-                            self.angle_bounds[item][phase] = self.record_position(item)
+                            self.angle_bounds[item][phase] = raw_feedback
                             break
                     else:
                         time_start = time.time()
                     previous_raw_feedback = raw_feedback
 
-            
 
 if __name__ == '__main__':
     
@@ -60,3 +55,10 @@ if __name__ == '__main__':
     
     print("The calibration values are as follows:\n")
     print(calib.angle_bounds)
+
+    f = open("calib_record.txt","w+")
+    
+    f.write(calib.angle_bounds)
+    
+    f.close()
+    

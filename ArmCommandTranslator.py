@@ -4,8 +4,44 @@ from Adafruit_PWM_Servo_Driver import Adafruit_PWM_Servo_Driver
 import time
 
 from ArmConstants import *
-# Initialise the PWM device using the default address
+from ArmPosFeedback import feedback_channels
 
+def readNums(x):
+    try:
+        return int(x)
+    except ValueError:
+        return x
+    
+# Read in the learnt motor angle bounds during calibration
+f_calib = open("calib_record.txt","r")
+
+if f_calib.mode == "r":
+    RAW_ANGLE_BOUNDS_TEXT = f_calib.read()
+    
+    RAW_ANGLE_BOUNDS = [[readNums(x) for x in raw_elements.split()] for raw_elements in RAW_ANGLE_BOUNDS_TEXT.split('],')]
+    
+    RAW_ANGLE_BOUNDS = [[47872, 11904], [10944, 46528], [13056, 48384], [12672, 48320]]
+        
+    print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
+    print(RAW_ANGLE_BOUNDS[1][1],RAW_ANGLE_BOUNDS[1][0])
+else:
+    RAW_ANGLE_BOUNDS = [[0,0] for i in range(MOTOR_NUM)]
+    print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
+    
+def motorFBConv(motor_ind,raw_angle):
+    
+    raw_angle_span = RAW_ANGLE_BOUNDS[motor_ind][1] - RAW_ANGLE_BOUNDS[motor_ind][0]
+    physical_angle_span = MOTOR_BOUNDS['UPPER_BOUND'][motor_ind] - MOTOR_BOUNDS['LOWER_BOUND'][motor_ind]
+    
+    if (raw_angle_span != 0):
+        if(motor_ind == MOTOR_0):
+            fb_angle = 0
+        else:
+            fb_angle = MOTOR_BOUNDS['LOWER_BOUND'][motor_ind] + (physical_angle_span / raw_angle_span) * (raw_angle - RAW_ANGLE_BOUNDS[motor_ind][0])
+    
+    return fb_angle
+
+# Initialise the PWM device using the default address
 pwm = Adafruit_PWM_Servo_Driver.PWM(0x40)
 # Set frequency to 60 Hz
 pwm.setPWMFreq(60)
@@ -24,8 +60,8 @@ def gotoAngle(motor,angle):
      
     """
     # Limiting the angle requests as per the motor range constraints
-    # Servo 1 motion limited between 45 - 135 deg due to excess loading at 
-    # larger angles, not enough motor torque at channel 1
+    # Servo 1 motion should ideally be limited between 45 - 135 deg due to excess
+    # loading at larger angles, not enough motor torque at channel 1
 
     angle = limit(angle,MOTOR_BOUNDS['LOWER_BOUND'][motor],MOTOR_BOUNDS['UPPER_BOUND'][motor])
     
@@ -87,4 +123,8 @@ if __name__ == "__main__":
             runMotor = False
         if (runMotor == True):
             gotoAngle(motor_num, angle)
+            fb_raw_angle = feedback_channels[motor_num].value
+            print("Raw_angle: {}".format(fb_raw_angle))
+            fb_angle = motorFBConv(motor_num, fb_raw_angle)
+            print("Taraget: {}, Feedback: {}".format(angle,fb_angle))
             
