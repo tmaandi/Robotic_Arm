@@ -6,38 +6,31 @@ import time
 from ArmConstants import *
 from ArmPosFeedback import feedback_channels
 
-def readNums(x):
-    try:
-        return int(x)
-    except ValueError:
-        return x
-    
-# Read in the learnt motor angle bounds during calibration
+# Read-in the learnt motor angle bounds during calibration
 f_calib = open("calib_record.txt","r")
 
 if f_calib.mode == "r":
-    RAW_ANGLE_BOUNDS_TEXT = f_calib.read()
-    
-    RAW_ANGLE_BOUNDS = [[readNums(x) for x in raw_elements.split()] for raw_elements in RAW_ANGLE_BOUNDS_TEXT.split('],')]
-    
-    RAW_ANGLE_BOUNDS = [[47872, 11904], [10944, 46528], [13056, 48384], [12672, 48320]]
-        
-    print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
-    print(RAW_ANGLE_BOUNDS[1][1],RAW_ANGLE_BOUNDS[1][0])
+    # Reading the calib file, line by line and splitting at the 'comma'
+    # for each line to split min/max bounds for each motor
+    RAW_ANGLE_BOUNDS = [x.rstrip().split(',') for x in f_calib.readlines()]
+    RAW_ANGLE_BOUNDS = [[int(x) for x in y] for y in RAW_ANGLE_BOUNDS]     
+    #print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
 else:
     RAW_ANGLE_BOUNDS = [[0,0] for i in range(MOTOR_NUM)]
-    print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
+    #print("RAW_ANGLE_BOUNDS: {}".format(RAW_ANGLE_BOUNDS))
+
+f_calib.close()
     
 def motorFBConv(motor_ind,raw_angle):
-    
+    """ This method transforms the raw potentiometer feedback readings into
+        physical motor joint angles as per the coordinate system"""
     raw_angle_span = RAW_ANGLE_BOUNDS[motor_ind][1] - RAW_ANGLE_BOUNDS[motor_ind][0]
     physical_angle_span = MOTOR_BOUNDS['UPPER_BOUND'][motor_ind] - MOTOR_BOUNDS['LOWER_BOUND'][motor_ind]
     
     if (raw_angle_span != 0):
-        if(motor_ind == MOTOR_0):
-            fb_angle = 0
-        else:
-            fb_angle = MOTOR_BOUNDS['LOWER_BOUND'][motor_ind] + (physical_angle_span / raw_angle_span) * (raw_angle - RAW_ANGLE_BOUNDS[motor_ind][0])
+        fb_angle = MOTOR_BOUNDS['LOWER_BOUND'][motor_ind] + (physical_angle_span / raw_angle_span) * (raw_angle - RAW_ANGLE_BOUNDS[motor_ind][0])
+    else:
+        raise "Invalid motor angle bounds"
     
     return fb_angle
 
@@ -123,8 +116,8 @@ if __name__ == "__main__":
             runMotor = False
         if (runMotor == True):
             gotoAngle(motor_num, angle)
+            time.sleep(3)
             fb_raw_angle = feedback_channels[motor_num].value
-            print("Raw_angle: {}".format(fb_raw_angle))
             fb_angle = motorFBConv(motor_num, fb_raw_angle)
-            print("Taraget: {}, Feedback: {}".format(angle,fb_angle))
+            print("Target: {}, Feedback: {}".format(angle,fb_angle))
             

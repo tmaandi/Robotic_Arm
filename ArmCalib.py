@@ -57,8 +57,8 @@ if __name__ == '__main__':
     print(calib.angle_bounds)
 
     f = open("calib_record.txt","w+")
-    
-    f.write(calib.angle_bounds)
+    for item in range(MOTOR_NUM):
+        f.write(str(calib.angle_bounds[item][0]) + ',' + str(calib.angle_bounds[item][1]) + '\n')
     
     f.close()
     
