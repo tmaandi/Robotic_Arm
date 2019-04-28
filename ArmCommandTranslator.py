@@ -87,10 +87,63 @@ def gotoAngle(motor,angle):
             servoPulse = 395 + angle*235/90
     else:
         print("Invalid Motor Choice")
+    
+    # Feedback Error
+    fb_raw_angle = feedback_channels[motor].value
+    fb_angle = motorFBConv(motor, fb_raw_angle)
+    control_error = angle - fb_angle
+    
+    # Proportional Gain
+    K_p = [0.6,0.2,1.0,0.4] # duty cycle count per degree of error
+    # Integral Gain
+    K_i = [0.06,0.06,0.1,0.1] # addition to duty cycle per loop per degree error
+    # Derivative Gain
+    K_d = [0.25, 0.0, 0.5, 0.00]
+    
+    settling_timer = 0;
+    error_sum = 0
+    error_derivative = 0
+    prev_control_error = 0
+    
+    while(settling_timer < 100):
+        # Closed Loop Servo Pulse
+        # Use integral only when close to the target
+        if (abs(control_error) < 8.0):
+            error_sum += control_error
+        elif (abs(control_error) > 16.0):
+            pass
+        #error_sum = 0
+        else:
+            pass
+               
+        print("error_sum: {}".format(error_sum))
         
-    servoPulse = int(servoPulse)
-    pwm.setPWM(MOTOR_LAYOUT[motor],0,servoPulse)
-
+        feedback_control_term = (K_p[motor] * control_error) + (K_i[motor] * error_sum) + (K_d[motor] * error_derivative)
+        # MOTOR_1 increments the angle with decreasing PWM
+        if (motor == MOTOR_0):
+            servoPulseCL = servoPulse - feedback_control_term
+        else:
+            servoPulseCL = servoPulse + feedback_control_term
+            
+        pwm.setPWM(MOTOR_LAYOUT[motor],0,int(servoPulseCL))
+        
+        fb_raw_angle = feedback_channels[motor].value
+        fb_angle = motorFBConv(motor, fb_raw_angle)
+        control_error = angle - fb_angle
+        
+        if(abs(control_error) < 3.0):
+            settling_timer = settling_timer + 1
+        else:
+            settling_timer = 0
+        
+        # Calculating Error Derivative
+        error_derivative = control_error - prev_control_error
+        prev_control_error = control_error
+                    
+        print("Servo Pulse: {}".format(servoPulseCL))
+        print("Target: {}, Feedback: {}".format(angle,fb_angle))
+        print("Control_Error: {}".format(control_error))
+        print("D_Term: {}".format((K_d[motor] * error_derivative)))
 
 ##############################
 #### Test Code/Manual Run ####
@@ -117,7 +170,7 @@ if __name__ == "__main__":
         if (runMotor == True):
             gotoAngle(motor_num, angle)
             time.sleep(3)
-            fb_raw_angle = feedback_channels[motor_num].value
-            fb_angle = motorFBConv(motor_num, fb_raw_angle)
-            print("Target: {}, Feedback: {}".format(angle,fb_angle))
+            fb_raw_angle_debug = feedback_channels[motor_num].value
+            fb_angle_debug = motorFBConv(motor_num, fb_raw_angle_debug)
+            print("Target: {}, Feedback: {}".format(angle,fb_angle_debug))
             
