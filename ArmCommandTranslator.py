@@ -94,11 +94,11 @@ def gotoAngle(motor,angle):
     control_error = angle - fb_angle
     
     # Proportional Gain
-    K_p = [0.6,0.2,1.0,0.4] # duty cycle count per degree of error
+    K_p = [0.7,0.2,1.0,0.4] # duty cycle count per degree of error
     # Integral Gain
-    K_i = [0.06,0.06,0.1,0.1] # addition to duty cycle per loop per degree error
+    K_i = [0.07,0.06,0.1,0.1] # addition to duty cycle per loop per degree error
     # Derivative Gain
-    K_d = [0.25, 0.0, 0.5, 0.00]
+    K_d = [0.2, 0.0, 0.5, 0.00]
     
     settling_timer = 0;
     error_sum = 0
@@ -110,11 +110,6 @@ def gotoAngle(motor,angle):
         # Use integral only when close to the target
         if (abs(control_error) < 8.0):
             error_sum += control_error
-        elif (abs(control_error) > 16.0):
-            pass
-        #error_sum = 0
-        else:
-            pass
                
         print("error_sum: {}".format(error_sum))
         
